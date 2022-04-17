@@ -3,8 +3,9 @@ package neilyich.correction.codes.core
 import neilyich.correction.codes.core.exceptions.DecodingException
 import neilyich.correction.codes.core.exceptions.EncodingException
 import neilyich.correction.codes.core.words.Word
+import neilyich.correction.codes.serialization.CodeName
 
-interface CorrectingCode<IC, EC, Info: Word<IC>, EncodedWord: Word<EC>> {
+interface Code<IC, EC, Info: Word<IC>, EncodedWord: Word<EC>> {
     @Throws(EncodingException::class)
     fun encode(info: Info): EncodedWord
 
@@ -13,4 +14,6 @@ interface CorrectingCode<IC, EC, Info: Word<IC>, EncodedWord: Word<EC>> {
 
     fun infoWordLength(): Int
     fun encodedWordLength(): Int
+
+    fun name(): CodeName
 }

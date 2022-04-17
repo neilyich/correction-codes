@@ -1,10 +1,12 @@
 package neilyich.correction.codes.core
 
+import neilyich.correction.codes.core.exceptions.DecodingException
+import neilyich.correction.codes.core.exceptions.EncodingException
 import neilyich.correction.codes.core.words.FieldWord
-import neilyich.correction.codes.util.matrix.AFieldMatrix
 import neilyich.field.element.FieldElement
+import neilyich.util.matrix.AFieldMatrix
 
-abstract class LinearFieldCode<Element: FieldElement>: FieldCode<Element, Element> {
+abstract class LinearCode<Element: FieldElement>: FieldCode<Element, Element> {
     abstract fun n(): Int
     abstract fun k(): Int
     abstract fun d(): Int
@@ -14,12 +16,12 @@ abstract class LinearFieldCode<Element: FieldElement>: FieldCode<Element, Elemen
 
     protected fun checkInfoWord(word: FieldWord<Element>) {
         if (word.length() != k()) {
-            throw IllegalArgumentException("unable to encode word with length=${word.length()} (k=${k()}")
+            throw EncodingException(word, "unable to encode word with length=${word.length()} (k=${k()})")
         }
     }
     protected fun checkEncodedWord(word: FieldWord<Element>) {
         if (word.length() != n()) {
-            throw IllegalArgumentException("unable to decode word with length=${word.length()} (n=${n()}")
+            throw DecodingException(word, "unable to decode word with length=${word.length()} (n=${n()})")
         }
     }
 
@@ -30,6 +32,4 @@ abstract class LinearFieldCode<Element: FieldElement>: FieldCode<Element, Elemen
     private val G: AFieldMatrix<Element> by lazy { createG() }
     protected abstract fun createG(): AFieldMatrix<Element>
     fun G(): AFieldMatrix<Element> = G
-
-    abstract fun dualCode(): LinearFieldCode<Element>
 }

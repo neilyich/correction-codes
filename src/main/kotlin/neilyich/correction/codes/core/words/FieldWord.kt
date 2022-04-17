@@ -2,6 +2,8 @@ package neilyich.correction.codes.core.words
 
 import neilyich.field.Field
 import neilyich.field.element.FieldElement
+import neilyich.util.matrix.HFieldVector
+import neilyich.util.matrix.VFieldVector
 
 class FieldWord<Element: FieldElement>(
     private val field: Field<Element>,
@@ -15,14 +17,6 @@ class FieldWord<Element: FieldElement>(
     override fun content(): List<Element> = content
 
     fun field(): Field<Element> = field
-
-    override fun toString(): String {
-        val builder = StringBuilder("[")
-        for (c in content) {
-            builder.append(c.toString()).append(", ")
-        }
-        return builder.removeSuffix(", ").toString() + "]"
-    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -39,4 +33,20 @@ class FieldWord<Element: FieldElement>(
         result = 31 * result + content.hashCode()
         return result
     }
+
+    fun toVVector(): VFieldVector<Element> = VFieldVector(field, content)
+
+    fun toHVector(): HFieldVector<Element> = HFieldVector(field, content)
+
+    override fun with(i: Int, errorValue: Element): Word<Element> {
+        return with(i, errorValue) { oldValue, error -> field.add(oldValue, error) }
+    }
+
+    override fun with(i: Int, errorValue: Element, compute: (oldValue: Element, error: Element) -> Element): Word<Element> {
+        val newContent = content.toMutableList()
+        newContent[i] = compute(content[i], errorValue)
+        return FieldWord(field, newContent)
+    }
+
+    override fun toString(): String = content().toString()
 }
